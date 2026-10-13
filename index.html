@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+    <title>Poetry Analysis Part II</title>
+    <link rel="icon" type="image/x-icon" href="./assets/Logo_last.png" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: url("assets/Backgrounds.png");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            object-fit: cover;
+            min-height: 100vh;
+        }
+
+        #heading {
+            text-align: center;
+            background-color: whitesmoke;
+            padding: 10px 20px;
+            margin: 10px auto;
+            color: black;
+            font-size: 2em;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            width: fit-content;
+            border-radius: 10px;
+        }
+
+        .activity {
+            margin: 20px auto;
+            padding: 0 2%;
+            display: flex;
+            gap: 2%;
+            align-items: flex-start;
+        }
+
+        /* Question Buttons Sidebar - 6% */
+        .sidebar {
+            width: 100px;
+            height: fit-content;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            color: white;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .questionButtons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        
+       .qBtn {
+            padding: 12% 9%;
+            border: none;
+            border-radius: 10px;
+            background-color: #f5f5f5; /* Grayish white background */
+            color: black;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            width: 85%;
+            text-align: center;
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.8); /* Dark shadow bottom right */
+            position: relative;
+        }
+
+        .qBtn:hover {
+            background-color: #e8e8e8;
+            transform: translateY(-1px);
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .qBtn.active {
+            background-color: #f5f5f5;
+            box-shadow: none; /* Remove shadow when active */
+            border: 3px solid #000; /* Dark black outline */
+            transform: translateY(2px); /* Pressed effect */
+        }
+
+        .qBtn:active {
+            box-shadow: none;
+            border: 3px solid #000;
+            transform: translateY(2px);
+        }
+
+        /* Story Section - 45% */
+        .storySection {
+            flex: 0 0 40%;
+            background: white;
+            border-radius: 20px;
+            padding: 15px 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            max-height: 70vh;
+            min-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .storyContent {
+            font-size: 1.2em;
+           
+            color: #333;
+        }
+
+        .storyContent p {
+            margin-bottom: 15px;
+        }
+
+        .storyContent strong {
+            color: #667eea;
+        }
+
+        /* Question Section - 45% */
+        .questionSection {
+            flex: 0 0 50%;
+            display: flex;
+            flex-direction: column;
+           
+        }
+
+        .questionContainer {
+            background: white;
+            border-radius: 20px;
+            padding: 15px 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+             max-height: 70vh;
+            min-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .questionText {
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            color: #333;
+            line-height: 1.4;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .optionGrid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        .optionBtn {
+            padding: 15px 20px;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.3em;
+            text-align: center;
+            position: relative;
+        }
+
+        .optionBtn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .optionBtn.correct {
+            background: #d4edda;
+            border-color: #4CAF50;
+            color: #155724;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .optionBtn.incorrect {
+            background: #f8d7da;
+            border-color: #f44336;
+            color: #721c24;
+            box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
+        }
+
+        .feedbackSection {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .feedbackText {
+            font-size: 1.2em;
+            font-weight: bold;
+            flex: 1;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .nextBtn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nextBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .finalScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 400px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border-radius: 20px;
+            color: white;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        /* Scrollbar styling */
+        .storySection::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .storySection::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .storySection::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .storySection::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        /* Question Container Scrollbar styling */
+        .questionContainer::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .questionContainer::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .questionContainer::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .questionContainer::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+        /* Final full screen mode */
+.fullscreen-final .sidebar,
+.fullscreen-final .storySection {
+    display: none !important;
+}
+
+.fullscreen-final .questionSection {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+}
+
+.fullscreen-final .questionContainer {
+    max-height: none;
+    height: 70vh;
+}
+
+
+        /* Responsive design */
+        
+    </style>
+</head>
+
+<body>
+    <!-- <div class="header" style="
+      width: auto;
+      box-shadow: 5px 5px 10px rgb(0, 0, 0);
+      padding-bottom: 10px;
+      background-color: white;
+    ">
+        <img src="./assets/Logo.png" width="5%" style="float: left; margin-top: 25px; text-align: left"
+            class="img-responsive" />
+        <span>
+            <img src="./assets/header.png" width="30%" height="" class="img-responsive" style="text-align: left" />
+        </span>
+    </div> -->
+    <div>
+        <p id="heading">Poetry Analysis Part II</p>
+    </div>
+
+    <div class="activity">
+        <!-- Left Sidebar - Question Buttons (6%) -->
+        <div class="sidebar">
+            <div class="questionButtons" id="questionButtons"></div>
+        </div>
+
+        <!-- Middle - Story Section (45%) -->
+        <div class="storySection">
+            <div class="storyContent" id="storyContent"></div>
+        </div>
+
+        <!-- Right - Question Section (45%) -->
+        <div class="questionSection">
+            <div class="questionContainer">
+                <div id="questionContent" class="questionContent"></div>
+
+                <div class="finalScreen" id="finalScreen" style="display:none;">
+                    <div>
+                        <h2>🎉 Well Done!</h2>
+                        <p>You've completed all questions!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+        let selectedAnswer = null;
+        let data = [
+  
+  
+  
+  {
+    "questionNo": "Q1",
+    "story": "<b>The Forsaken Merman<br>Adapted from Matthew Arnold</b><br><br>Come, dear children, let us away;<br>Down and away below!<br>Now my brothers call from the bay,<br>Now the great winds shoreward blow,<br>Now the salt tides seaward flow;<br>Now the wild white horses play,<br>Champ and chafe and toss in the spray.<br>Children dear, let us away!<br>This way, this way!<br><br>Call her once before you go—<br>Call once yet!<br>In a voice that she will know:<br>\"Margaret! Margaret!\"<br>Children's voices should be dear<br>(Call once more) to a mother's ear;<br>Children's voices, wild with pain—<br>Surely she will come again!<br>Call her once and come away;<br>This way, this way!<br>\"Mother dear, we cannot stay!<br>The wild white horses foam and fret.\"<br>Margaret! Margaret!<br><br>Come, dear children, come away down;<br>Call no more!<br>One last look at the white-wall'd town<br>And the little grey church on the windy shore,<br>Then come down!<br>She will not come though you call all day;<br>Come away, come away!",
+    "question": "What is the subject of the poem?",
+    "options": [
+      "Margaret, the mother",
+      "The children",
+      "The merman",
+      "The wild white horses"
+    ],
+    "correct": 2
+  },
+  {
+    "questionNo": "Q2",
+    "story": "<b>The Forsaken Merman<br>Adapted from Matthew Arnold</b><br><br>Come, dear children, let us away;<br>Down and away below!<br>Now my brothers call from the bay,<br>Now the great winds shoreward blow,<br>Now the salt tides seaward flow;<br>Now the wild white horses play,<br>Champ and chafe and toss in the spray.<br>Children dear, let us away!<br>This way, this way!<br><br>Call her once before you go—<br>Call once yet!<br>In a voice that she will know:<br>\"Margaret! Margaret!\"<br>Children's voices should be dear<br>(Call once more) to a mother's ear;<br>Children's voices, wild with pain—<br>Surely she will come again!<br>Call her once and come away;<br>This way, this way!<br>\"Mother dear, we cannot stay!<br>The wild white horses foam and fret.\"<br>Margaret! Margaret!<br><br>Come, dear children, come away down;<br>Call no more!<br>One last look at the white-wall'd town<br>And the little grey church on the windy shore,<br>Then come down!<br>She will not come though you call all day;<br>Come away, come away!",
+    "question": "What is literally happening in the third stanza?",
+    "options": [
+      "The merman is telling the children to take one last look at the church and then come down with him, since Margaret will not return",
+      "The children are refusing to leave their mother",
+      "Margaret is coming down to join the merman and children",
+      "The children are being punished for calling out"
+    ],
+    "correct": 0
+  },
+  {
+    "questionNo": "Q3",
+    "story": "<b>The Forsaken Merman<br>Adapted from Matthew Arnold</b><br><br>Come, dear children, let us away;<br>Down and away below!<br>Now my brothers call from the bay,<br>Now the great winds shoreward blow,<br>Now the salt tides seaward flow;<br>Now the wild white horses play,<br>Champ and chafe and toss in the spray.<br>Children dear, let us away!<br>This way, this way!<br><br>Call her once before you go—<br>Call once yet!<br>In a voice that she will know:<br>\"Margaret! Margaret!\"<br>Children's voices should be dear<br>(Call once more) to a mother's ear;<br>Children's voices, wild with pain—<br>Surely she will come again!<br>Call her once and come away;<br>This way, this way!<br>\"Mother dear, we cannot stay!<br>The wild white horses foam and fret.\"<br>Margaret! Margaret!<br><br>Come, dear children, come away down;<br>Call no more!<br>One last look at the white-wall'd town<br>And the little grey church on the windy shore,<br>Then come down!<br>She will not come though you call all day;<br>Come away, come away!",
+    "question": "Which of the following lines is using personification?",
+    "options": [
+      "\"Come, dear children, let us away\"",
+      "\"Now the great winds shoreward blow\"",
+      "\"Now the wild white horses play, / Champ and chafe and toss in the spray\"",
+      "\"Call her once before you go\""
+    ],
+    "correct": 2
+  },
+  {
+    "questionNo": "Q4",
+    "story": "<b>The Forsaken Merman<br>Adapted from Matthew Arnold</b><br><br>Come, dear children, let us away;<br>Down and away below!<br>Now my brothers call from the bay,<br>Now the great winds shoreward blow,<br>Now the salt tides seaward flow;<br>Now the wild white horses play,<br>Champ and chafe and toss in the spray.<br>Children dear, let us away!<br>This way, this way!<br><br>Call her once before you go—<br>Call once yet!<br>In a voice that she will know:<br>\"Margaret! Margaret!\"<br>Children's voices should be dear<br>(Call once more) to a mother's ear;<br>Children's voices, wild with pain—<br>Surely she will come again!<br>Call her once and come away;<br>This way, this way!<br>\"Mother dear, we cannot stay!<br>The wild white horses foam and fret.\"<br>Margaret! Margaret!<br><br>Come, dear children, come away down;<br>Call no more!<br>One last look at the white-wall'd town<br>And the little grey church on the windy shore,<br>Then come down!<br>She will not come though you call all day;<br>Come away, come away!",
+    "question": "The teacher asks the class to pick a clean example of repetition that creates a growing sense of urgency and insistence.",
+    "options": [
+      "\"Down and away below!\"",
+      "\"This way, this way!\" / \"Margaret! Margaret!\" / \"Come away, come away!\"",
+      "\"Children's voices should be dear\"",
+      "\"One last look at the white-wall'd town\""
+    ],
+    "correct": 1
+  },
+  {
+    "questionNo": "Q5",
+    "story": "<b>The Forsaken Merman<br>Adapted from Matthew Arnold</b><br><br>Come, dear children, let us away;<br>Down and away below!<br>Now my brothers call from the bay,<br>Now the great winds shoreward blow,<br>Now the salt tides seaward flow;<br>Now the wild white horses play,<br>Champ and chafe and toss in the spray.<br>Children dear, let us away!<br>This way, this way!<br><br>Call her once before you go—<br>Call once yet!<br>In a voice that she will know:<br>\"Margaret! Margaret!\"<br>Children's voices should be dear<br>(Call once more) to a mother's ear;<br>Children's voices, wild with pain—<br>Surely she will come again!<br>Call her once and come away;<br>This way, this way!<br>\"Mother dear, we cannot stay!<br>The wild white horses foam and fret.\"<br>Margaret! Margaret!<br><br>Come, dear children, come away down;<br>Call no more!<br>One last look at the white-wall'd town<br>And the little grey church on the windy shore,<br>Then come down!<br>She will not come though you call all day;<br>Come away, come away!",
+    "question": "Two students identify the device in the lines:<br><b> \"Now the salt tides seaward flow; <br>Now the wild white horses play,<br> Champ and chafe and toss in the spray.\"<br><i>• &nbsp;&nbsp;&nbsp;&nbsp; Miranda says this is imagery, since it creates a vivid picture of the sea in motion. <br>• &nbsp;&nbsp;&nbsp;&nbsp;Henry says this is extended metaphor, comparing the waves to horses across several lines through the verbs champ, chafe, and toss. </i></b>Which student is correct?",
+    "options": [
+      "Only Miranda is correct",
+      "Only Henry is correct",
+      "Both are correct",
+      "Neither student is correct"
+    ],
+    "correct": 2
+  },
+  {
+    "questionNo": "Q6",
+    "story": "<b>The Forsaken Merman<br>Adapted from Matthew Arnold</b><br><br>Come, dear children, let us away;<br>Down and away below!<br>Now my brothers call from the bay,<br>Now the great winds shoreward blow,<br>Now the salt tides seaward flow;<br>Now the wild white horses play,<br>Champ and chafe and toss in the spray.<br>Children dear, let us away!<br>This way, this way!<br><br>Call her once before you go—<br>Call once yet!<br>In a voice that she will know:<br>\"Margaret! Margaret!\"<br>Children's voices should be dear<br>(Call once more) to a mother's ear;<br>Children's voices, wild with pain—<br>Surely she will come again!<br>Call her once and come away;<br>This way, this way!<br>\"Mother dear, we cannot stay!<br>The wild white horses foam and fret.\"<br>Margaret! Margaret!<br><br>Come, dear children, come away down;<br>Call no more!<br>One last look at the white-wall'd town<br>And the little grey church on the windy shore,<br>Then come down!<br>She will not come though you call all day;<br>Come away, come away!",
+    "question": "What is the mood of the poem we read?",
+    "options": [
+      "Joyful and celebratory",
+      "Sorrowful and yearning",
+      "Angry and vengeful",
+      "Comic and playful"
+    ],
+    "correct": 1
+  },
+  {
+    "questionNo": "Q7",
+    "story": "<b>The Forsaken Merman<br>Adapted from Matthew Arnold</b><br><br>Come, dear children, let us away;<br>Down and away below!<br>Now my brothers call from the bay,<br>Now the great winds shoreward blow,<br>Now the salt tides seaward flow;<br>Now the wild white horses play,<br>Champ and chafe and toss in the spray.<br>Children dear, let us away!<br>This way, this way!<br><br>Call her once before you go—<br>Call once yet!<br>In a voice that she will know:<br>\"Margaret! Margaret!\"<br>Children's voices should be dear<br>(Call once more) to a mother's ear;<br>Children's voices, wild with pain—<br>Surely she will come again!<br>Call her once and come away;<br>This way, this way!<br>\"Mother dear, we cannot stay!<br>The wild white horses foam and fret.\"<br>Margaret! Margaret!<br><br>Come, dear children, come away down;<br>Call no more!<br>One last look at the white-wall'd town<br>And the little grey church on the windy shore,<br>Then come down!<br>She will not come though you call all day;<br>Come away, come away!",
+    "question": "Read the first stanza again. <br>Which of the following correctly identifies the rhyme scheme of this stanza?",
+    "options": [
+      "AABBCC, a set of tidy rhyming couplets",
+      "ABAB, a clean alternating pattern throughout",
+      "ABABBAAAA, an irregular pattern that does not settle into one fixed scheme",
+      "No rhyme at all — free verse with no rhyming lines"
+    ],
+    "correct": 2
+  },
+  {
+    "questionNo": "Q8",
+    "story": "<b>The Forsaken Merman<br>Adapted from Matthew Arnold</b><br><br>Come, dear children, let us away;<br>Down and away below!<br>Now my brothers call from the bay,<br>Now the great winds shoreward blow,<br>Now the salt tides seaward flow;<br>Now the wild white horses play,<br>Champ and chafe and toss in the spray.<br>Children dear, let us away!<br>This way, this way!<br><br>Call her once before you go—<br>Call once yet!<br>In a voice that she will know:<br>\"Margaret! Margaret!\"<br>Children's voices should be dear<br>(Call once more) to a mother's ear;<br>Children's voices, wild with pain—<br>Surely she will come again!<br>Call her once and come away;<br>This way, this way!<br>\"Mother dear, we cannot stay!<br>The wild white horses foam and fret.\"<br>Margaret! Margaret!<br><br>Come, dear children, come away down;<br>Call no more!<br>One last look at the white-wall'd town<br>And the little grey church on the windy shore,<br>Then come down!<br>She will not come though you call all day;<br>Come away, come away!",
+    "question": "What do the \"wild white horses\" most likely symbolise?",
+    "options": [
+      "Actual horses that live near the sea",
+      "The untamed, powerful pull of the sea that is drawing the children away from human life",
+      "Soldiers riding into battle",
+      "A herd of animals the merman once owned"
+    ],
+    "correct": 1
+  },
+  {
+    "questionNo": "Q9",
+    "story": "<b>The Forsaken Merman<br>Adapted from Matthew Arnold</b><br><br>Come, dear children, let us away;<br>Down and away below!<br>Now my brothers call from the bay,<br>Now the great winds shoreward blow,<br>Now the salt tides seaward flow;<br>Now the wild white horses play,<br>Champ and chafe and toss in the spray.<br>Children dear, let us away!<br>This way, this way!<br><br>Call her once before you go—<br>Call once yet!<br>In a voice that she will know:<br>\"Margaret! Margaret!\"<br>Children's voices should be dear<br>(Call once more) to a mother's ear;<br>Children's voices, wild with pain—<br>Surely she will come again!<br>Call her once and come away;<br>This way, this way!<br>\"Mother dear, we cannot stay!<br>The wild white horses foam and fret.\"<br>Margaret! Margaret!<br><br>Come, dear children, come away down;<br>Call no more!<br>One last look at the white-wall'd town<br>And the little grey church on the windy shore,<br>Then come down!<br>She will not come though you call all day;<br>Come away, come away!",
+    "question": "The merman draws attention to \"the little grey church on the windy shore\" as one last image before the children leave with him. Is this best understood as a conventional symbol or a contextual symbol, and why?",
+    "options": [
+      "Conventional, because churches always represent evil in literature",
+      "Contextual, because here it specifically represents the human, faithful land-life the children are leaving behind",
+      "Conventional, because churches have always symbolised fear across cultures",
+      "Contextual, because the poem never explains what the church means at all"
+    ],
+    "correct": 1
+  },
+  {
+    "questionNo": "Q10",
+    "story": "<b>The Forsaken Merman<br>Adapted from Matthew Arnold</b><br><br>Come, dear children, let us away;<br>Down and away below!<br>Now my brothers call from the bay,<br>Now the great winds shoreward blow,<br>Now the salt tides seaward flow;<br>Now the wild white horses play,<br>Champ and chafe and toss in the spray.<br>Children dear, let us away!<br>This way, this way!<br><br>Call her once before you go—<br>Call once yet!<br>In a voice that she will know:<br>\"Margaret! Margaret!\"<br>Children's voices should be dear<br>(Call once more) to a mother's ear;<br>Children's voices, wild with pain—<br>Surely she will come again!<br>Call her once and come away;<br>This way, this way!<br>\"Mother dear, we cannot stay!<br>The wild white horses foam and fret.\"<br>Margaret! Margaret!<br><br>Come, dear children, come away down;<br>Call no more!<br>One last look at the white-wall'd town<br>And the little grey church on the windy shore,<br>Then come down!<br>She will not come though you call all day;<br>Come away, come away!",
+    "question": "Consider these two observations from the poem:<br><b><i> Observation 1: The merman and children call for Margaret repeatedly, but she never answers or returns to them.<br> Observation 2: By the end, the children accept that \"she will not come\" and turn away toward the sea with the merman. </b></i><br>Which of the following best states the theme built from these observations?",
+    "options": [
+      "Mothers should never leave their children under any circumstances",
+      "Love and longing, cannot always overcome the choices others make, and grief must eventually be accepted",
+      "The sea is always more powerful than the land",
+      "Children should always obey their fathers without question"
+    ],
+    "correct": 1
+  }
+
+
+
+]
+
+        window.onload = () => {
+            renderButtons();
+            renderStory();
+            renderQuestion();
+        };
+
+        function renderButtons() {
+            const container = document.getElementById('questionButtons');
+            container.innerHTML = '';
+            data.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.innerText = item.questionNo;
+                btn.className = 'qBtn' + (index === currentIndex ? ' active' : '');
+                btn.onclick = () => {
+                    currentIndex = index;
+                    selectedAnswer = null;
+                    renderStory();
+                    renderQuestion();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderStory() {
+            const storyContent = document.getElementById('storyContent');
+            const q = data[currentIndex];
+            
+            if (q.story && Array.isArray(q.story)) {
+                storyContent.innerHTML = q.story.join('');
+            } else if (q.story) {
+                storyContent.innerHTML = q.story;
+            } else {
+                storyContent.innerHTML = '<p>No story content available.</p>';
+            }
+        }
+
+        function renderQuestion() {
+            const questionContent = document.getElementById('questionContent');
+            const finalScreen = document.getElementById('finalScreen');
+
+            if (currentIndex >= data.length) {
+    questionContent.style.display = 'none';
+    finalScreen.style.display = 'flex';
+
+    // Enable full screen final view
+    document.querySelector('.activity').classList.add('fullscreen-final');
+
+    return;
+}
+
+
+            const q = data[currentIndex];
+            let html = '';
+
+            html += `<h3 class='questionText'>${q.question}</h3>`;
+            html += `<div class="optionGrid">`;
+            
+            q.options.forEach((opt, idx) => {
+                html += `<button class="optionBtn" onclick="handleOptionClick(${idx})">${opt}</button>`;
+            });
+
+            html += `</div>`;
+            html += `<div class="feedbackSection">
+                        <p class="feedbackText" id="feedbackText"></p>
+                        <button class="nextBtn" id="nextBtn" style="display:none;" onclick="handleNext()">Next</button>
+                     </div>`;
+
+            questionContent.innerHTML = html;
+            questionContent.style.display = 'block';
+            finalScreen.style.display = 'none';
+            renderButtons();
+        }
+
+        function handleOptionClick(index) {
+            if (selectedAnswer !== null) return;
+
+            selectedAnswer = index;
+            const q = data[currentIndex];
+            const feedback = document.getElementById('feedbackText');
+            const nextBtn = document.getElementById('nextBtn');
+            const optionBtns = document.querySelectorAll('.optionBtn');
+
+            optionBtns.forEach((btn) => {
+                btn.style.pointerEvents = 'none';
+            });
+
+            if (index === q.correct) {
+                optionBtns[index].classList.add('correct');
+                feedback.innerHTML = `<span class='emoji'>✅</span> Correct! Great job!`;
+                feedback.style.color = '#4CAF50';
+                nextBtn.innerText = currentIndex + 1 < data.length ? 'Next' : 'Finish';
+                nextBtn.style.display = 'block';
+            } else {
+                optionBtns[index].classList.add('incorrect');
+                feedback.innerHTML = `<span class='emoji'>❌</span> Try again!`;
+                feedback.style.color = '#f44336';
+
+                optionBtns.forEach((btn, idx) => {
+                    if (idx !== index) {
+                        btn.style.pointerEvents = 'auto';
+                    }
+                });
+                selectedAnswer = null;
+            }
+        }
+
+        function handleNext() {
+            if (currentIndex + 1 < data.length) {
+                currentIndex++;
+                selectedAnswer = null;
+                renderStory();
+                renderQuestion();
+            } else {
+                currentIndex++;
+                renderQuestion();
+            }
+        }
+    </script>
+</body>
+
+</html>
